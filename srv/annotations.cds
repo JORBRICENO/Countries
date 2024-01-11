@@ -1,6 +1,8 @@
 using {CatalogService} from './catalog-service';
 
 annotate CatalogService.Countries with @odata.draft.enabled;
+annotate CatalogService.Currencies with @odata.draft.enabled;
+annotate CatalogService.Nationalities with @odata.draft.enabled;
 
 annotate CatalogService.Countries with {
     Code     @title: 'Code';
@@ -88,6 +90,15 @@ annotate CatalogService.Countries with @(
                 }
             ],
         },
+        FieldGroup #NationalityInformation : {
+            $Type : 'UI.FieldGroupType',
+            Data : [
+                {
+                    $Type : 'UI.DataField',
+                    Value : Nationality.Nationality,
+                },
+            ],
+        },
         Facets                         : [{
             $Type : 'UI.CollectionFacet',
             Facets: [
@@ -101,6 +112,11 @@ annotate CatalogService.Countries with @(
                     Target: '@UI.FieldGroup#CurrencyInformation',
                     Label : 'Currency Information',
                 },
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Target : '@UI.FieldGroup#NationalityInformation',
+                    Label : 'Nationality Information',
+                },                
             ],
             Label : 'General Information'
         }],
@@ -163,3 +179,8 @@ annotate CatalogService.Currencies with @(
         }, ],
     }, ],
 );
+
+annotate CatalogService.Nationalities with {
+    Nationality @title : 'Nationality';
+    Code @title : 'Code';
+};
