@@ -10,7 +10,9 @@ entity Countries : cuid {
     Currency    : Association to Currencies
                       on Currency.Country = $self;
     Nationality : Association to Nationalities
-                      on Nationality.Nationality = $self;
+                      on Nationality.Country = $self;
+    ToCompanies : Composition of many CountriesxCompanies
+                      on ToCompanies.Country = $self;
 };
 
 entity Currencies : cuid {
@@ -22,5 +24,32 @@ entity Currencies : cuid {
 
 entity Nationalities : cuid {
     Code        : String(3);
-    Nationality : Association to Countries;
-}
+    Nationality : String(80);
+    Country     : Association to Countries;
+};
+
+@cds.autoexpose
+entity CountriesxCompanies : cuid {
+    Country : Association to Countries;
+    Company : Association to Companies;
+};
+
+@cds.autoexpose
+entity Companies : cuid {
+    Company     : String(80);
+    Description : String(400);
+    Address     : Association to CompanyAddresses
+                      on Address.Company = $self;
+    ToCountries : Association to many CountriesxCompanies
+                      on ToCountries.Company = $self;
+};
+
+entity CompanyAddresses : cuid {
+    Country    : Association to Countries;
+    Department : String(80);
+    Province   : String(80);
+    Region     : String(80);
+    Address    : String(200);
+    PostalCode : String(5);
+    Company    : Association to Companies;
+};

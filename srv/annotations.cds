@@ -3,9 +3,36 @@ using {CatalogService} from './catalog-service';
 annotate CatalogService.Countries with @odata.draft.enabled;
 annotate CatalogService.Currencies with @odata.draft.enabled;
 annotate CatalogService.Nationalities with @odata.draft.enabled;
+annotate CatalogService.Companies with @odata.draft.enabled;
+annotate CatalogService.CompanyAddresses with @odata.draft.enabled;
 
 annotate CatalogService.Countries with {
-    Code     @title: 'Code';
+    Code     @title: 'Code'
+            @Common : { 
+                ValueList : {
+                    $Type : 'Common.ValueListType',
+                    CollectionPath : 'Countries',
+                    Parameters : [
+                        {
+                            $Type : 'Common.ValueListParameterInOut',
+                            LocalDataProperty : Code,
+                            ValueListProperty : 'Code',
+                        },
+                        {
+                            $Type : 'Common.ValueListParameterDisplayOnly',
+                            ValueListProperty : 'Alpha_2',
+                        },
+                        {
+                            $Type : 'Common.ValueListParameterDisplayOnly',
+                            ValueListProperty : 'Alpha_3',
+                        },
+                        {
+                            $Type : 'Common.ValueListParameterDisplayOnly',
+                            ValueListProperty : 'Country',
+                        },
+                    ],
+                },
+             };
     Alpha_2  @title: 'Alpha 2';
     Alpha_3  @title: 'Alpha 3';
     Country  @title: 'Country';
@@ -19,12 +46,12 @@ annotate CatalogService.Countries with @(
     },
     Common.SemanticKey             : [Code],
     UI                             : {
-        SelectionFields                : [
+        SelectionFields                   : [
             Code,
             Alpha_2,
             Alpha_3
         ],
-        HeaderInfo                     : {
+        HeaderInfo                        : {
             $Type         : 'UI.HeaderInfoType',
             TypeName      : 'Country',
             TypeNamePlural: 'Countries',
@@ -33,7 +60,7 @@ annotate CatalogService.Countries with @(
                 Value: Country,
             },
         },
-        LineItem                       : [
+        LineItem                          : [
             {
                 $Type: 'UI.DataField',
                 Value: Code
@@ -55,7 +82,7 @@ annotate CatalogService.Countries with @(
                 Value: Currency.Currency
             }
         ],
-        FieldGroup #Country            : {
+        FieldGroup #Country               : {
             $Type: 'UI.FieldGroupType',
             Data : [
                 {
@@ -77,7 +104,7 @@ annotate CatalogService.Countries with @(
                 },
             ]
         },
-        FieldGroup #CurrencyInformation: {
+        FieldGroup #CurrencyInformation   : {
             $Type: 'UI.FieldGroupType',
             Data : [
                 {
@@ -90,36 +117,40 @@ annotate CatalogService.Countries with @(
                 }
             ],
         },
-        FieldGroup #NationalityInformation : {
-            $Type : 'UI.FieldGroupType',
-            Data : [
-                {
-                    $Type : 'UI.DataField',
-                    Value : Nationality.Nationality,
-                },
-            ],
+        FieldGroup #NationalityInformation: {
+            $Type: 'UI.FieldGroupType',
+            Data : [{
+                $Type: 'UI.DataField',
+                Value: Nationality.Nationality,
+            }, ],
         },
-        Facets                         : [{
-            $Type : 'UI.CollectionFacet',
-            Facets: [
-                {
-                    $Type : 'UI.ReferenceFacet',
-                    Target: '@UI.FieldGroup#Country',
-                    Label : 'Country Information'
-                },
-                {
-                    $Type : 'UI.ReferenceFacet',
-                    Target: '@UI.FieldGroup#CurrencyInformation',
-                    Label : 'Currency Information',
-                },
-                {
-                    $Type : 'UI.ReferenceFacet',
-                    Target : '@UI.FieldGroup#NationalityInformation',
-                    Label : 'Nationality Information',
-                },                
-            ],
-            Label : 'General Information'
-        }],
+        Facets                            : [
+            {
+                $Type : 'UI.CollectionFacet',
+                Facets: [
+                    {
+                        $Type : 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#Country',
+                        Label : 'Country Information'
+                    },
+                    {
+                        $Type : 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#CurrencyInformation',
+                        Label : 'Currency Information',
+                    },
+                    {
+                        $Type : 'UI.ReferenceFacet',
+                        Target: '@UI.FieldGroup#NationalityInformation',
+                        Label : 'Nationality Information',
+                    },
+                ],
+                Label : 'General Information'
+            },
+            {
+                $Type : 'UI.ReferenceFacet',
+                Target: 'ToCompanies/@UI.LineItem',
+            },
+        ],
     }
 );
 
@@ -133,17 +164,17 @@ annotate CatalogService.Currencies with @(
         Num,
         Currency
     ],
-    UI.HeaderInfo  : {
-        $Type : 'UI.HeaderInfoType',
-        TypeName : 'Currency',
-        TypeNamePlural : 'Currency',
-        Title : {
-            $Type : 'UI.DataField',
-            Value : Currency
+    UI.HeaderInfo     : {
+        $Type         : 'UI.HeaderInfoType',
+        TypeName      : 'Currency',
+        TypeNamePlural: 'Currency',
+        Title         : {
+            $Type: 'UI.DataField',
+            Value: Currency
         },
-        Description : {
-            $Type : 'UI.DataField',
-            Value : Num
+        Description   : {
+            $Type: 'UI.DataField',
+            Value: Num
         }
     },
     UI.LineItem       : [
@@ -181,6 +212,256 @@ annotate CatalogService.Currencies with @(
 );
 
 annotate CatalogService.Nationalities with {
-    Nationality @title : 'Nationality';
-    Code @title : 'Code';
+    Nationality @title: 'Nationality';
+    Code        @title: 'Code';
 };
+
+annotate CatalogService.Nationalities with @();
+
+annotate CatalogService.Companies with {
+    Company      @title: 'Company'
+                 @Common : { 
+                    ValueList : {
+                        $Type : 'Common.ValueListType',
+                        CollectionPath : 'Companies',
+                        Parameters : [
+                            {
+                                $Type : 'Common.ValueListParameterInOut',
+                                LocalDataProperty : Company,
+                                ValueListProperty : 'Company',
+                            },
+                        ],
+                    },
+                  };
+    Description  @title: 'Description'  @UI.MultiLineText;
+};
+
+annotate CatalogService.Companies with @(
+    Capabilities.SearchRestrictions  : {
+        $Type     : 'Capabilities.SearchRestrictionsType',
+        Searchable: false
+    },
+    UI.HeaderInfo                    : {
+        $Type         : 'UI.HeaderInfoType',
+        TypeName      : 'Company',
+        TypeNamePlural: 'Companies',
+        Title         : {
+            $Type: 'UI.DataField',
+            Value: Company,
+        },
+        Description   : {
+            $Type: 'UI.DataField',
+            Value: Description,
+        },
+    },
+    UI.LineItem                      : [
+        {
+            $Type: 'UI.DataField',
+            Value: Company,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: Description,
+        },
+    ],
+    UI.FieldGroup #CompanyInformation: {
+        $Type: 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type: 'UI.DataField',
+                Value: Company,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: Description,
+            },
+        ],
+    },
+    UI.Facets                        : [{
+        $Type : 'UI.CollectionFacet',
+        Facets: [
+            {
+                $Type : 'UI.ReferenceFacet',
+                Target: '@UI.FieldGroup#CompanyInformation',
+                Label : 'Company Information',
+            }, 
+            {
+                $Type : 'UI.ReferenceFacet',
+                Target : 'Address/@UI.FieldGroup#Address',
+                Label : 'Address',
+            },
+        ],
+        Label : 'General Information'
+    }, 
+    ],
+);
+
+annotate CatalogService.CompanyAddresses with {
+    @readonly
+    Country    @title : 'Country'
+               @Common: {
+        Text           : Country.Country,
+        TextArrangement: #TextOnly,
+        ValueList      : {
+            $Type         : 'Common.ValueListType',
+            CollectionPath: 'Countries',
+            Parameters    : [
+                {
+                    $Type            : 'Common.ValueListParameterInOut',
+                    LocalDataProperty: Country_ID,
+                    ValueListProperty: 'Country',
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'Alpha_2',
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'Alpha_3',
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'Code',
+                },
+            ],
+        },
+    };
+    Department @title : 'Department';
+    Province   @title : 'Province';
+    Region     @title : 'Region';
+    Address    @title : 'Address'  @UI.MultiLineText;
+    PostalCode @title : 'PostalCade';
+};
+
+annotate CatalogService.CompanyAddresses with @(
+    UI.HeaderInfo         : {
+        $Type         : 'UI.HeaderInfoType',
+        TypeName      : 'Address',
+        TypeNamePlural: 'Addresses',
+        Title         : {
+            $Type: 'UI.DataField',
+            Value: Country.Country,
+        },
+        Description   : {
+            $Type: 'UI.DataField',
+            Value: Address,
+        },
+    },
+    UI.LineItem           : [
+        {
+            $Type: 'UI.DataField',
+            Value: Country.Country,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: Department,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: Province,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: Region,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: Address,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: PostalCode,
+        },
+    ],
+    UI.FieldGroup #Address: {
+        $Type: 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type: 'UI.DataField',
+                Value: Country.Country,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: Department,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: Province,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: Region,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: Address,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: PostalCode,
+            },
+        ],
+    },
+    UI.Facets             : [{
+        $Type : 'UI.CollectionFacet',
+        Facets: [{
+            $Type : 'UI.ReferenceFacet',
+            Target: '@UI.FieldGroup#Address',
+            Label : 'Address',
+        }, ],
+        Label : 'General Information',
+    }, ],
+);
+
+
+annotate CatalogService.CountriesxCompanies with {
+    Country @title: 'Country';
+    Company @title: 'Company';
+};
+
+annotate CatalogService.CountriesxCompanies with @(
+    UI.HeaderInfo: {
+        $Type         : 'UI.HeaderInfoType',
+        TypeName      : 'Company',
+        TypeNamePlural: 'Companies',
+        Title         : {
+            $Type: 'UI.DataField',
+            Value: Company.Company,
+        },
+        Description   : {
+            $Type: 'UI.DataField',
+            Value: Country.Country,
+        },
+    },
+    UI.LineItem  : [
+        {
+            $Type: 'UI.DataField',
+            Value: Company.Company,
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: Company.Description,
+        },
+    ],
+    UI.FieldGroup: {
+        $Type: 'UI.FieldGroupType',
+        Data : [
+            {
+                $Type: 'UI.DataField',
+                Value: Company.Company,
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: Company.Description,
+            },
+        ],
+    },
+    UI.Facets    : [{
+        $Type : 'UI.CollectionFacet',
+        Facets: [{
+            $Type : 'UI.ReferenceFacet',
+            Target: '@UI.FieldGroup',
+            Label : 'Relationship',
+        }, ],
+    }, ],
+);
